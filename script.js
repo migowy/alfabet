@@ -129,6 +129,20 @@ function hide_emojis() {
 }
 
 
+function show_correct() {
+    sign_img().hidden = 1;
+    document.getElementById("correct").hidden = 0;
+    document.getElementById("incorrect").hidden = 1;
+}
+
+
+function show_incorrect() {
+    sign_img().hidden = 1;
+    document.getElementById("correct").hidden = 1;
+    document.getElementById("incorrect").hidden = 0;
+}
+
+
 function show_letter(l) {
     if (all_letters.has(l)) {
         sign_img().src = `./img/${l}.jpg`;
@@ -202,14 +216,13 @@ export function check_word() {
 	span.textContent = curr_word;
     }
     if (user_word == curr_word) {
-        sign_img().hidden = 1;
-	document.getElementById("correct").hidden = 0;
+	show_correct();
     }
     else {
-	sign_img().hidden = 1;
-	document.getElementById("incorrect").hidden = 0;
+	show_incorrect();
     }
 }
+
 
 export function reveal_word() {
     blur_buttons();

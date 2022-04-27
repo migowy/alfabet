@@ -1,0 +1,135 @@
+@font-face {
+    font-family: My Gill Sans; 
+    src: url("https://www.w3.org/2019/09/TPAC-template/fonts/Gill_Sans.eot")
+	    format("embedded-opentype"),
+         url("https://www.w3.org/2019/09/TPAC-template/fonts/Gill_Sans.woff")
+	    format("woff");
+    font-style: normal;
+    font-weight: normal;
+    font-display: swap;
+}
+
+body {
+    font-family: My Gill Sans, sans-serif;
+    font-size: 12pt;
+}
+
+div {
+    margin: 0px;
+    padding: 0px;
+}
+
+.container {
+    margin: 1em;
+    display: grid;
+    grid-template-columns: auto;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.header {
+    font-size: 18pt;
+    font-weight: bold;
+    font-variant: small-caps;
+    color: darkblue;
+}
+
+
+.title-2 {
+    color: darkmagenta;
+    /* text-shadow: 4px 4px 5px pink; */
+}
+
+.image {
+    width: 300px;
+    height: 400px;
+}
+
+.buttons {
+    width: 300px;
+    display: grid;
+    align-content: space-evenly;
+    grid-template-columns: auto auto;
+    gap: 10px;
+}
+
+.buttons input {
+    width: 100%;
+}
+
+.buttons button {
+    width: 100%;
+}
+
+.response {
+    border: 2px solid black;
+}
+
+.response input {
+    padding: 0px;
+    text-align: center;
+    border: 0px;
+}
+
+.settings input {
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+.image, .buttons, .settings {
+    float: left;
+    margin: 10px;
+}
+
+input#guess {
+    height: 100%;
+}
+
+img#hands {
+    width: 300px;
+}
+
+#correct, #incorrect {
+    text-align: center;
+    font-size: 18pt;
+    height: 400px;
+    color: cyan;
+}
+
+#incorrect {
+    background: black;
+}
+
+#correct {
+    background-image: linear-gradient(to bottom right, aqua, fuchsia);
+}
+
+.emoji {
+    display: block;
+    font-size: 80pt;
+    padding: 60px 0 40px 0;
+}
+
+.answer {
+    display: block;
+    font-size: 30pt;
+    padding: 15px;
+    color: white;
+}
+
+
+@media only screen and (-moz-min-device-pixel-ratio: 2), 
+       only screen and (-o-min-device-pixel-ratio: 2/1), 
+       only screen and (-webkit-min-device-pixel-ratio: 2), 
+       only screen and (min-device-pixel-ratio: 2)
+{
+    /* For phone displays */
+
+    .container {
+	margin-top: 30px;
+	transform: scale(2.5);
+	transform-origin: top;
+    }
+}

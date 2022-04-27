@@ -1,1 +1,116 @@
-<h1>Hello!</h1>
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta http-equiv="Cache-Control" content="no-store"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Language" content="pl-PL"/>
+    <meta name="description" content="Fingerspelling"/>
+    <base target="_parent"/>
+
+    <link rel="stylesheet" href="https://unpkg.com/purecss@2.0.6/build/pure-min.css"
+	  integrity="sha384-Uu6IeWbM+gzNVXJcM9XV3SohHtmWE+3VGi496jvgX1jyvDTXfdK+rfZc8C1Aehk5"
+	  crossorigin="anonymous">
+    <link rel="stylesheet" href="./style.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+	    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+	    crossorigin="anonymous"></script>
+    <script language="javascript" type="module" src="./words.js"></script>
+    <script language="javascript" type="module" src="./script.js"></script>
+
+    <script laguage="javascript" type="module">
+
+      import {
+	  Levels, set_level, set_speed, check_word, new_word, repeat_word, reveal_word
+      } from "./script.js";
+
+      window.onload = (event) => {
+
+	  console.log("Document loaded");
+	  let level_div = $("#choose-level");
+
+	  for (let lvl in Levels) {
+	      let input_div = $("<div class='option'></div>");
+	      level_div.append(input_div);
+
+	      let label = $(`<label for="level-${lvl}" class="pure-checkbox">`);
+	      input_div.append(label);
+
+              let i = $(
+x		  `<input type="radio" name="level" id="level-${lvl}" value="${lvl}"/>`
+              );
+              i.click(() => set_level(lvl));
+	      label.append(i);
+	      label.append(Levels[lvl].label);
+	  }
+          $("#level-1").trigger("click");
+
+	  $("#new-word").click(new_word);
+	  $("#check-word").click(check_word);
+	  $("#repeat-word").click(repeat_word);
+	  $("#reveal-word").click(reveal_word);
+      };
+
+    </script>
+
+  </head>
+
+
+  <body>
+
+    <div id="main" class="container">
+
+      <div class="header">
+	<span class="title-1">Alfabeto</span><span class="title-2">inator</span>
+        <span class="title-3">Migowy</span>
+      </div>
+
+      <div class="image">
+	<img id="hands" src="img/blank.png"
+	     title="Wybierz 'Nowe słowo' lub 'Powtórz słowo'">
+        </img>
+
+	<div id="correct" hidden="1">
+	  <span class="emoji">🙂</span>
+	  <span>Dobra odpowiedź!</span>
+	  <span class="answer"></span>
+	</div>
+
+	<div id="incorrect" hidden="1">
+	  <span class="emoji">🙁</span>
+	  <span>Poprawna odpowiedź to:</span>
+	  <span class="answer"></span>
+	</div>
+      </div>
+
+      <div class="buttons">
+
+	<div class="new-word">
+	  <input id="new-word" class="pure-button" type="button" value="Nowe słowo" />
+	</div>
+
+	<div class="repeat-word">
+	  <input id="repeat-word" class="pure-button" type="button" value="Powtórz słowo" />
+	</div>
+
+	<div class="response">
+	  <input class="input" id="guess" type="text" maxlength="20" value="" />
+	</div>
+
+	<div class="check-word">
+	  <input id="check-word" class="pure-button" value="Sprawdź" type="submit"/>
+	</div>
+
+      </div>
+
+      <div class="settings">
+	<h4>Poziom trudności:</h4>
+	<div class="choose-level" id="choose-level"></div>
+      </div>
+
+    </div>
+
+  </body>
+
+</html>

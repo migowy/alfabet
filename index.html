@@ -50,6 +50,10 @@
 	  $("#check-word").click(check_word);
 	  $("#repeat-word").click(repeat_word);
 	  $("#reveal-word").click(reveal_word);
+
+	  $("#guess").keyup(
+	      (event) => (event.keyCode != 13) || $("#check-word").click()
+	  );
       };
 
     </script>

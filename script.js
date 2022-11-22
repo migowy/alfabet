@@ -29,15 +29,15 @@ for (let [word, count] of all_words) {
 
 console.log(`Filtered words: ${filtered_words.length}`);
 
-    
+
 // Preload the images
 var preloaded = [];
 
 for (let l of all_letters) {
     let img = new Image();
-    img.src = `./img/${l}.jpg`;
+    img.src = `./img/${l}.png`;
     preloaded.push(img);
-    console.log(`Preloaded alfabet/${l}.jpg`);
+    console.log(`Preloaded alfabet/${l}.png`);
 }
 
 
@@ -145,7 +145,7 @@ function show_incorrect() {
 
 function show_letter(l) {
     if (all_letters.has(l)) {
-        sign_img().src = `./img/${l}.jpg`;
+        sign_img().src = `./img/${l}.png`;
         sign_img().alt = l;
     }
     else {

@@ -89,6 +89,7 @@ input#guess {
 
 img#hands {
     width: 300px;
+    background-color: black;
 }
 
 #correct, #incorrect {

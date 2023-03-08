@@ -1,4 +1,4 @@
-export const all_words = [
+export const All_words = [
   ["być", 64535],
   ["jak", 37932],
   ["oda", 36721],

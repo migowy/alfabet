@@ -1,37 +1,18 @@
-import { all_words } from "./words.js";
+/*eslint no-unused-vars: "warn"*/
 
-console.log(`Words loaded: ${all_words.length}`);
+import { All_words } from "./words.js";
+// export { check_word, new_word, repeat_word };
 
-let all_letters = new Set("abcdefghijklmnoprstuwyz"); // "ąćęłńóśźż";
+console.log(`Words loaded: ${All_words.length}`);
 
-var filtered_words = [];
-
-for (let [word, count] of all_words) {
-    var prev = undefined;
-    var valid = true;
-    for (let c of word) {
-	if (! all_letters.has(c)) {
-	    valid = false;
-	    break;
-	}
-	if (c == prev) {
-	    valid = false;
-	    break;
-	}
-	prev = c;
-    }
-    if (valid) {
-	filtered_words.push([word, count]);
-    }
-}
-
-// all_words = filtered_words;
-
-console.log(`Filtered words: ${filtered_words.length}`);
+const CH_char = '©';
+const RZ_char = '®';
+const all_letters = 'abcdefghijklmnoprstuwyząćęłńóśźż';
 
 
 // Preload the images
 var preloaded = [];
+
 
 for (let l of all_letters) {
     let img = new Image();
@@ -63,11 +44,29 @@ var words_by_level = [];
 var count_by_level = [];
 
 
+const ommited = ['ź', 'ż', 'ch', 'sz', 'cz'];
+
 for (let _lvl in Levels) {
     words_by_level.push(new Map());
     count_by_level.push(0);
 }   
-for (let [word, cnt] of filtered_words) {
+for (let pair of All_words) {
+    let [word, cnt] = pair;
+    var omit = false;
+    // Ignore words that we cannot display
+    for (var str of ommited) {
+        if (word.includes(str)) {
+            omit = true;
+            break;
+        }
+    }
+    if (omit) {
+        continue;
+    }
+    // Replace 'ch' and 'rz' by a special characters
+    word = word.replace('rz', RZ_char);
+    word = word.replace('ch', CH_char);
+
     let len_word = word.length;
     for (let lvl in Levels) {
         if (len_word <= Levels[lvl].max_letters) {
@@ -116,13 +115,6 @@ function user_input() {
 }
 
 
-function stop_animation() {
-    window.clearTimeout(timeout_id);
-    sign_img().src = "./img/blank.png";
-    is_playing = false;
-}
-
-
 function hide_emojis() {
     document.getElementById("correct").hidden = 1;
     document.getElementById("incorrect").hidden = 1;
@@ -143,14 +135,90 @@ function show_incorrect() {
 }
 
 
+function stop_animation() {
+    window.clearTimeout(timeout_id);
+    let img = sign_img();
+    img.src = "./img/blank.png";
+    img.style["margin-left"] = 0;
+    img.style["margin-top"] = 0;
+    is_playing = false;
+}
+
+
+// To describe circular movement:
+const r = 25; 
+const r3_2 = r * Math.sqrt(3) / 2;
+
+const letter_animations = {
+    'ą': [
+        [0, 0], [r3_2, r * 0.5], [r3_2, r * 1.5],
+        [0, r * 2], [-r3_2, r * 1.5], [-r3_2, r * 0.5],
+    ],
+    'ch': [[0, 0], [0, 12], [0, 24], [0, 36], [0, 48]],
+    'ć': [[0, 0], [0, 12], [0, 24], [0, 36], [0, 48]],
+    'ę': [
+        [0, 0], [r3_2, r * 0.5], [r3_2, r * 1.5],
+        [0, r * 2], [-r3_2, r * 1.5], [-r3_2, r * 0.5],
+    ], 
+    'h': [[0, 0], [0, 12], [0, 24], [0, 36], [0, 48]],
+    'ł': [[15, 0], [0, 0], [-15, 0], [-30, 0], [-45, 0]],
+    'ń': [[0, 0], [0, 12], [0, 24], [0, 36], [0, 48]],
+    'ó': [[0, 0], [0, 12], [0, 24], [0, 36], [0, 48]],
+    'ś': [[0, 0], [0, 12], [0, 24], [0, 36], [0, 48]],
+    'z': [
+        [0, 1], [18, 4], [36, 7], [54, 10], 
+        [36, 40], [18, 70], 
+        [0, 100], [18, 103], [36, 106], [54, 109]
+    ],
+    'rz': [
+        [0, 1], [18, 4], [36, 7], [54, 10], 
+        [36, 40], [18, 70], 
+        [0, 100], [18, 103], [36, 106], [54, 109]
+    ]
+    // 'ź': 10
+    // 'ż': 
+}
+
 function show_letter(l) {
-    if (all_letters.has(l)) {
-        sign_img().src = `./img/${l}.png`;
-        sign_img().alt = l;
+    // For animated letter, return the minimal time needed
+    // to display all the frames of the letter.
+    // For non-animated letters return 0.
+
+    if (l == RZ_char) {
+        l = 'rz';
+    } 
+    else if (l == CH_char) {
+        l = 'ch';
     }
-    else {
-        console.log(`No image for letter '${l}'`);
+
+    let img = sign_img();
+    img.src = `./img/${l}.png`;
+    img.alt = l;
+
+    if (l in letter_animations) {
+        let positions = letter_animations[l];
+        img.style["margin-left"] = `${positions[0][0]}px`;
+        img.style["margin-top"] = `${positions[0][1]}px`;
+
+        let frameDelay = 50;  // 300 / positions.length;
+        
+        for (var i = 1; i < letter_animations[l].length; i++) {
+            let pos = positions[i];
+            window.setTimeout(
+                function() {
+                    img.style["margin-left"] = `${pos[0]}px`;
+                    img.style["margin-top"] = `${pos[1]}px`;         
+                },
+                i * frameDelay
+            );
     }
+
+        return positions.length * frameDelay;
+    }
+
+    img.style["margin-left"] = 0;
+    img.style["margin-top"] = 0;
+    return 0;
 }
 
 
@@ -167,9 +235,12 @@ function show_images() {
         return;
     }
 
-    show_letter(curr_word.charAt(curr_index));
+    let min_time = show_letter(curr_word.charAt(curr_index));
     curr_index += 1;
-    timeout_id = window.setTimeout(show_images, Levels[state.level_no].delay);
+    timeout_id = window.setTimeout(
+        show_images, 
+        Math.max(Levels[state.level_no].delay, min_time)
+    );
 }
 
 
@@ -181,16 +252,6 @@ function blur_buttons() {
 
 
 // Exported functions ////////
-
-
-export function new_word() {
-    hide_emojis();
-    blur_buttons();
-    user_input().value = "";
-    curr_word = choose_word(state.level_no);
-    console.log(`Nowe słowo ${curr_word}, poziom: ${Levels[state.level_no].label}`);
-    repeat_word();
-}
 
 
 export function repeat_word() {
@@ -208,18 +269,33 @@ export function repeat_word() {
 }
 
 
+export function new_word() {
+    blur_buttons();
+    user_input().value = "";
+    document.getElementById("new-word").blur();
+    curr_word = choose_word(state.level_no);
+    console.log(`Nowe słowo ${curr_word}, poziom: ${Levels[state.level_no].label}`);
+    repeat_word();
+}
+
+
+function normalize(word) {
+    return word.replace(RZ_char, 'rz').replace(CH_char, 'ch');
+}
+
+
 export function check_word() {
     blur_buttons();
     let user_word = user_input().value.toLowerCase();
     stop_animation();
     for (let span of document.getElementsByClassName("answer")) {
-	span.textContent = curr_word;
+	    span.textContent = normalize(curr_word);
     }
-    if (user_word == curr_word) {
-	show_correct();
+    if (user_word == normalize(curr_word)) {
+	    show_correct();
     }
     else {
-	show_incorrect();
+	    show_incorrect();
     }
 }
 
@@ -227,7 +303,7 @@ export function check_word() {
 export function reveal_word() {
     blur_buttons();
     if (curr_word != undefined) {
-	user_input().value = curr_word;
+	    user_input().value = normalize(curr_word);
     }
 }
 

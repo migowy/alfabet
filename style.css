@@ -42,10 +42,16 @@ div {
     /* text-shadow: 4px 4px 5px pink; */
 }
 
+
 .image {
     width: 300px;
     height: 400px;
+    /* need to clip the image within the div, important when
+       we move the image around when diplaying animations */
+    overflow: hidden;
+    background-color: black;
 }
+
 
 .buttons {
     width: 300px;
@@ -89,6 +95,7 @@ input#guess {
 
 img#hands {
     width: 300px;
+    height: 400px;
     background-color: black;
 }
 

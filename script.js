@@ -286,7 +286,7 @@ function normalize(word) {
 
 export function check_word() {
     blur_buttons();
-    let user_word = user_input().value.toLowerCase();
+    let user_word = user_input().value.trim().toLowerCase();
     stop_animation();
     for (let span of document.getElementsByClassName("answer")) {
 	    span.textContent = normalize(curr_word);

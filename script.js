@@ -6,7 +6,9 @@ import { All_words } from "./words.js";
 console.log(`Words loaded: ${All_words.length}`);
 
 const CH_char = '©';
+const CZ_char = '¢';
 const RZ_char = '®';
+const SZ_char = '$';
 const all_letters = 'abcdefghijklmnoprstuwyząćęłńóśźż';
 
 
@@ -14,11 +16,18 @@ const all_letters = 'abcdefghijklmnoprstuwyząćęłńóśźż';
 var preloaded = [];
 
 
-for (let l of all_letters) {
+function preload(l) {
     let img = new Image();
     img.src = `./img/${l}.png`;
     preloaded.push(img);
     console.log(`Preloaded alfabet/${l}.png`);
+}
+
+for (let l of all_letters) {
+    preload(l);
+}
+for (let l of ['ch', 'cz', 'sz', 'rz', 'kropka', 'akcent']) {
+    preload(l);
 }
 
 
@@ -44,7 +53,43 @@ var words_by_level = [];
 var count_by_level = [];
 
 
-const ommited = ['ź', 'ż', 'ch', 'sz', 'cz'];
+function encode_special(word) {
+    // Replace 'ch' and 'rz' by a special characters
+    word = word.replace('rz', RZ_char);
+    word = word.replace('ch', CH_char);
+    word = word.replace('cz', CZ_char);
+    word = word.replace('sz', SZ_char);
+    word = word.replace('ź', 'z,');
+    word = word.replace('ż', 'z.');
+    return word;
+}
+
+function decode_special(word) {
+    word = word.replace(RZ_char, 'rz');
+    word = word.replace(CH_char, 'ch');
+    word = word.replace(CZ_char, 'cz');
+    word = word.replace(SZ_char, 'sz');
+    word = word.replace('z,', 'ź');
+    word = word.replace('z.', 'ż');
+    return word;
+}
+
+
+function should_omit_word(word) {
+    // Omit words with capital letters
+    if (word != word.toLowerCase()) {
+        return true;
+    }
+    // const ommited = ['ź', 'ż'];
+    /* for (var str of ommited) {
+        if (word.includes(str)) {
+            return true;
+        }
+    }
+    */
+    return false;
+}
+
 
 for (let _lvl in Levels) {
     words_by_level.push(new Map());
@@ -52,20 +97,12 @@ for (let _lvl in Levels) {
 }   
 for (let pair of All_words) {
     let [word, cnt] = pair;
-    var omit = false;
-    // Ignore words that we cannot display
-    for (var str of ommited) {
-        if (word.includes(str)) {
-            omit = true;
-            break;
-        }
-    }
-    if (omit) {
+    
+    if (should_omit_word(word)) {
         continue;
     }
-    // Replace 'ch' and 'rz' by a special characters
-    word = word.replace('rz', RZ_char);
-    word = word.replace('ch', CH_char);
+
+    word = encode_special(word);
 
     let len_word = word.length;
     for (let lvl in Levels) {
@@ -146,7 +183,7 @@ function stop_animation() {
 
 
 // To describe circular movement:
-const r = 25; 
+const r = 25;
 const r3_2 = r * Math.sqrt(3) / 2;
 
 const letter_animations = {
@@ -155,6 +192,7 @@ const letter_animations = {
         [0, r * 2], [-r3_2, r * 1.5], [-r3_2, r * 0.5],
     ],
     'ch': [[0, 0], [0, 12], [0, 24], [0, 36], [0, 48]],
+    'cz': [[-30, 0], [-10, 0], [10, 0], [30, 0]],
     'ć': [[0, 0], [0, 12], [0, 24], [0, 36], [0, 48]],
     'ę': [
         [0, 0], [r3_2, r * 0.5], [r3_2, r * 1.5],
@@ -164,6 +202,7 @@ const letter_animations = {
     'ł': [[15, 0], [0, 0], [-15, 0], [-30, 0], [-45, 0]],
     'ń': [[0, 0], [0, 12], [0, 24], [0, 36], [0, 48]],
     'ó': [[0, 0], [0, 12], [0, 24], [0, 36], [0, 48]],
+    'sz': [[-30, 0], [-10, 0], [10, 0], [30, 0]],
     'ś': [[0, 0], [0, 12], [0, 24], [0, 36], [0, 48]],
     'z': [
         [0, 1], [18, 4], [36, 7], [54, 10], 
@@ -189,6 +228,18 @@ function show_letter(l) {
     } 
     else if (l == CH_char) {
         l = 'ch';
+    }
+    else if (l == CZ_char) {
+        l = 'cz';
+    }
+    else if (l == SZ_char) {
+        l = 'sz';
+    }
+    else if (l == ',') {
+        l = 'akcent';
+    }
+    else if (l == '.') {
+        l = 'kropka';
     }
 
     let img = sign_img();
@@ -235,11 +286,16 @@ function show_images() {
         return;
     }
 
-    let min_time = show_letter(curr_word.charAt(curr_index));
+    let letter = curr_word.charAt(curr_index);
+    let min_time = show_letter(letter);
     curr_index += 1;
+    var delay = Levels[state.level_no].delay
+    if (letter == ',' || letter == '.') {
+        delay = 0.7 * delay;
+    }
     timeout_id = window.setTimeout(
         show_images, 
-        Math.max(Levels[state.level_no].delay, min_time)
+        Math.max(delay, min_time)
     );
 }
 
@@ -274,13 +330,9 @@ export function new_word() {
     user_input().value = "";
     document.getElementById("new-word").blur();
     curr_word = choose_word(state.level_no);
+    // curr_word = '$¢eka©';
     console.log(`Nowe słowo ${curr_word}, poziom: ${Levels[state.level_no].label}`);
     repeat_word();
-}
-
-
-function normalize(word) {
-    return word.replace(RZ_char, 'rz').replace(CH_char, 'ch');
 }
 
 
@@ -289,9 +341,9 @@ export function check_word() {
     let user_word = user_input().value.trim().toLowerCase();
     stop_animation();
     for (let span of document.getElementsByClassName("answer")) {
-	    span.textContent = normalize(curr_word);
+	    span.textContent = decode_special(curr_word);
     }
-    if (user_word == normalize(curr_word)) {
+    if (user_word == decode_special(curr_word)) {
 	    show_correct();
     }
     else {
@@ -303,7 +355,7 @@ export function check_word() {
 export function reveal_word() {
     blur_buttons();
     if (curr_word != undefined) {
-	    user_input().value = normalize(curr_word);
+	    user_input().value = decode_special(curr_word);
     }
 }
 
